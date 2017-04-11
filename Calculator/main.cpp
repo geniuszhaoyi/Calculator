@@ -1,18 +1,24 @@
 //
 //  main.cpp
-//  Calculator
+//  leetcode3
 //
-//  Created by 赵毅 on 3/5/17.
+//  Created by 赵毅 on 4/8/17.
 //  Copyright © 2017 赵毅. All rights reserved.
-//
 //
 
 #include <iostream>
+#include <string>
 #include <vector>
 #include <queue>
-#include <map>
-#include <string>
+#include <set>
 using namespace std;
+
+//#define USE_DOUBLE
+#ifdef USE_DOUBLE
+#define DOUBLE double
+#else
+#define DOUBLE long long int
+#endif
 
 class Calculator {
     const char TABLE[7][7] = {{ 1,  1, -1, -1, -1,  1,  1},
@@ -24,7 +30,7 @@ class Calculator {
         {-1, -1, -1, -1, -1,  9,  0}};
     const char OPC[7] = {'+', '-', '*', '/', '(', ')', '='};
     
-    vector<double> nums;
+    vector<DOUBLE> nums;
     vector<char> ops;
     string temp_input;
     
@@ -47,7 +53,7 @@ class Calculator {
         if(b=='x') b='*';
         return TABLE[opc_opn(a)][opc_opn(b)];
     }
-    double operate(double a, char op, double b){
+    DOUBLE operate(DOUBLE a, char op, DOUBLE b){
         switch (op) {
             case '+':
                 return a+b;
@@ -69,12 +75,16 @@ class Calculator {
         }
         cout<<endl;
     }
-    double my_stod(string a){
-        return stod("0"+a);
+    DOUBLE my_stod(string a){
+        // cout<<a<<endl;
+        return stoll("0"+a);
+        //        return stod("0"+a);
     }
 public:
     Calculator(){
         nums.clear();
+        temp_input="";
+        nums.push_back(0);
         ops.clear();
         ops.push_back('=');
     }
@@ -96,8 +106,8 @@ public:
                         if(ops.size() && nums.size()>1){
                             char op=ops[ops.size()-1];
                             ops.pop_back();
-                            double a=nums[nums.size()-2];
-                            double b=nums[nums.size()-1];
+                            DOUBLE a=nums[nums.size()-2];
+                            DOUBLE b=nums[nums.size()-1];
                             nums.pop_back();
                             nums.pop_back();
                             nums.push_back(operate(a,op,b));
@@ -108,12 +118,15 @@ public:
                 }
             }
         }
+        if(ch=='+' || ch=='-' || ch=='*' || ch=='/'){
+            temp_input="";
+            nums.push_back(0);
+        }
         if(is_num(ch)){
-            if(nums.size()<ops.size()){
-                temp_input="";
-                nums.push_back(0.0);
-            }
-            if(temp_input.find(ch)==string::npos) temp_input=temp_input+ch;
+            // if(nums.size()<ops.size()){
+            // }
+            // if(temp_input.find(ch)==string::npos)
+            temp_input=temp_input+ch;
             nums[nums.size()-1]=my_stod(temp_input);
         }
         return to_string(nums[nums.size()-1]);
@@ -137,12 +150,27 @@ public:
     }
 };
 
+
+class Solution {
+public:
+    int calculate(string s) {
+        string input="";
+        for(int i=0;i<s.length();i++){
+            if(s[i]!=' ') input+=s[i];
+        }
+        input="0+"+input+"=";
+        Calculator c;
+        c.update(input);
+        return stoi(c.display());
+    }
+};
+
 int main(void){
-    Calculator s;
-    //    cout<<s.update("1-2+3=")<<endl;
-    while(s.isactive()){
-        string str;
+    Calculator c;
+    string str="";
+    while(str!="="){
         cin>>str;
-        cout<<s.update(str)<<endl;
+        c.update(str);
+        cout<<c.display()<<endl;
     }
 }
